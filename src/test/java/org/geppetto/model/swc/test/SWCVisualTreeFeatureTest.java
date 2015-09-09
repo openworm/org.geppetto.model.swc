@@ -68,6 +68,10 @@ public class SWCVisualTreeFeatureTest
 		ServicesRegistry.registerModelFormat("SWC");
 	}
 
+	/**
+	 * @throws ModelInterpreterException
+	 * @throws SWCException
+	 */
 	@Test
 	public void testVisualTreeFeature() throws ModelInterpreterException, SWCException
 	{
