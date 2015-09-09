@@ -105,8 +105,7 @@ public class SWCVisualTreeFeature implements IVisualTreeFeature
 	private AVisualObjectNode getVisualObjectFromPoint(SWCPoint swcPoint) throws ModelInterpreterException
 	{
 
-		if(swcPoint.isSomaPoint()) // ideally an equals but the objects
-									// are generated. hassle postponed.
+		if(swcPoint.isSomaPoint())
 		{
 			SphereNode sphere = new SphereNode(swcPoint.getIndex().toString());
 			sphere.setRadius(swcPoint.getRadius());
