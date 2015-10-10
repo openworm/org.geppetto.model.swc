@@ -138,8 +138,8 @@ public class SWCVisualTreeFeature implements IVisualTreeFeature
 	{
 		Point point = new Point();
 		point.setX(swcPoint.getX());
-		point.setY(swcPoint.getZ());
-		point.setZ(-swcPoint.getY());
+		point.setY(swcPoint.getY());
+		point.setZ(swcPoint.getZ());
 		return point;
 	}
 }
