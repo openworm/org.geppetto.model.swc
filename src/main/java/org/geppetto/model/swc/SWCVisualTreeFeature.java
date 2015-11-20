@@ -38,11 +38,11 @@ import org.geppetto.core.features.IVisualTreeFeature;
 import org.geppetto.core.model.ModelInterpreterException;
 import org.geppetto.core.model.ModelWrapper;
 import org.geppetto.core.model.runtime.AVisualObjectNode;
-import org.geppetto.core.model.runtime.AspectNode;
 import org.geppetto.core.model.runtime.AspectSubTreeNode;
 import org.geppetto.core.model.runtime.AspectSubTreeNode.AspectTreeType;
-import org.geppetto.core.model.runtime.CylinderNode;
-import org.geppetto.core.model.runtime.SphereNode;
+import org.geppetto.core.model.typesystem.AspectNode;
+import org.geppetto.core.model.typesystem.values.CylinderValue;
+import org.geppetto.core.model.typesystem.values.SphereValue;
 import org.geppetto.core.services.GeppettoFeature;
 import org.geppetto.core.services.registry.ServicesRegistry;
 import org.geppetto.core.visualisation.model.Point;
@@ -107,7 +107,7 @@ public class SWCVisualTreeFeature implements IVisualTreeFeature
 
 		if(swcPoint.isSomaPoint())
 		{
-			SphereNode sphere = new SphereNode(swcPoint.getIndex().toString());
+			SphereValue sphere = new SphereValue(swcPoint.getIndex().toString());
 			sphere.setRadius(swcPoint.getRadius());
 			sphere.setPosition(getPoint(swcPoint));
 			return sphere;
@@ -116,7 +116,7 @@ public class SWCVisualTreeFeature implements IVisualTreeFeature
 		{
 			if(swcPoint.getParent() != null)
 			{
-				CylinderNode cyl = new CylinderNode(swcPoint.getIndex().toString());
+				CylinderValue cyl = new CylinderValue(swcPoint.getIndex().toString());
 
 				cyl.setPosition(getPoint(swcPoint));
 				cyl.setRadiusBottom(swcPoint.getRadius());
