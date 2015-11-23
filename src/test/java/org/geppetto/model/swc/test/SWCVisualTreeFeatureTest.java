@@ -41,8 +41,8 @@ import org.geppetto.core.model.ModelWrapper;
 import org.geppetto.core.model.runtime.AspectSubTreeNode;
 import org.geppetto.core.model.runtime.AspectSubTreeNode.AspectTreeType;
 import org.geppetto.core.model.typesystem.AspectNode;
-import org.geppetto.core.model.typesystem.values.CylinderValue;
-import org.geppetto.core.model.typesystem.values.SphereValue;
+import org.geppetto.core.model.typesystem.values.Cylinder;
+import org.geppetto.core.model.typesystem.values.Sphere;
 import org.geppetto.core.model.typesystem.visitor.AnalysisVisitor;
 import org.geppetto.core.services.registry.ServicesRegistry;
 import org.geppetto.model.swc.SWCVisualTreeFeature;
@@ -91,7 +91,7 @@ public class SWCVisualTreeFeatureTest
 		{
 			
 			@Override
-			public boolean visitSphereNode(SphereValue sphereNode)
+			public boolean visitSphereNode(Sphere sphereNode)
 			{
 				assertNotNull(sphereNode.getRadius());
 				assertFalse(sphereNode.getRadius() == 0);
@@ -99,7 +99,7 @@ public class SWCVisualTreeFeatureTest
 			}
 			
 			@Override
-			public boolean visitCylinderNode(CylinderValue sphereNode)
+			public boolean visitCylinderNode(Cylinder sphereNode)
 			{
 				assertNotNull(sphereNode.getRadiusBottom());
 				assertFalse(sphereNode.getRadiusBottom()==0);

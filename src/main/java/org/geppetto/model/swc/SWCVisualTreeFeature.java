@@ -34,20 +34,15 @@ package org.geppetto.model.swc;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
-import org.geppetto.core.features.IVisualTreeFeature;
 import org.geppetto.core.model.ModelInterpreterException;
 import org.geppetto.core.model.ModelWrapper;
 import org.geppetto.core.model.runtime.AVisualObjectNode;
-import org.geppetto.core.model.runtime.AspectSubTreeNode;
-import org.geppetto.core.model.runtime.AspectSubTreeNode.AspectTreeType;
-import org.geppetto.core.model.typesystem.AspectNode;
-import org.geppetto.core.model.typesystem.values.CylinderValue;
-import org.geppetto.core.model.typesystem.values.SphereValue;
 import org.geppetto.core.services.GeppettoFeature;
 import org.geppetto.core.services.registry.ServicesRegistry;
-import org.geppetto.core.visualisation.model.Point;
 import org.geppetto.model.swc.format.SWCModel;
 import org.geppetto.model.swc.format.SWCPoint;
+import org.geppetto.model.values.Cylinder;
+import org.geppetto.model.values.Sphere;
 
 /**
  * Populates visual tree for an aspect, given a SWC object to extract visualization objects from.
@@ -107,7 +102,7 @@ public class SWCVisualTreeFeature implements IVisualTreeFeature
 
 		if(swcPoint.isSomaPoint())
 		{
-			SphereValue sphere = new SphereValue(swcPoint.getIndex().toString());
+			Sphere sphere = new Sphere(swcPoint.getIndex().toString());
 			sphere.setRadius(swcPoint.getRadius());
 			sphere.setPosition(getPoint(swcPoint));
 			return sphere;
@@ -116,12 +111,11 @@ public class SWCVisualTreeFeature implements IVisualTreeFeature
 		{
 			if(swcPoint.getParent() != null)
 			{
-				CylinderValue cyl = new CylinderValue(swcPoint.getIndex().toString());
+				Cylinder cyl = new Cylinder(swcPoint.getIndex().toString());
 
 				cyl.setPosition(getPoint(swcPoint));
-				cyl.setRadiusBottom(swcPoint.getRadius());
-
-				cyl.setRadiusTop(swcPoint.getParent().getRadius());
+				cyl.setBottomRadius(swcPoint.getRadius());
+				cyl.setTopRadius(swcPoint.getParent().getRadius());
 				cyl.setDistal(getPoint(swcPoint.getParent()));
 				cyl.setHeight(0d);
 				return cyl;
