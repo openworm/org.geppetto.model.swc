@@ -32,23 +32,21 @@
  *******************************************************************************/
 package org.geppetto.model.swc.test;
 
-import static org.junit.Assert.*;
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertFalse;
+import static org.junit.Assert.assertNotNull;
 
 import java.net.URL;
 
 import org.geppetto.core.model.ModelInterpreterException;
 import org.geppetto.core.model.ModelWrapper;
-import org.geppetto.core.model.runtime.AspectSubTreeNode;
-import org.geppetto.core.model.runtime.AspectSubTreeNode.AspectTreeType;
-import org.geppetto.core.model.typesystem.AspectNode;
-import org.geppetto.core.model.typesystem.values.Cylinder;
-import org.geppetto.core.model.typesystem.values.Sphere;
-import org.geppetto.core.model.typesystem.visitor.AnalysisVisitor;
 import org.geppetto.core.services.registry.ServicesRegistry;
 import org.geppetto.model.swc.SWCVisualTreeFeature;
 import org.geppetto.model.swc.format.SWCException;
 import org.geppetto.model.swc.format.SWCModel;
 import org.geppetto.model.swc.format.SWCReader;
+import org.geppetto.model.values.Cylinder;
+import org.geppetto.model.values.Sphere;
 import org.junit.Before;
 import org.junit.Test;
 
@@ -101,10 +99,10 @@ public class SWCVisualTreeFeatureTest
 			@Override
 			public boolean visitCylinderNode(Cylinder sphereNode)
 			{
-				assertNotNull(sphereNode.getRadiusBottom());
-				assertFalse(sphereNode.getRadiusBottom()==0);
-				assertNotNull(sphereNode.getRadiusTop());
-				assertFalse(sphereNode.getRadiusTop()==0);
+				assertNotNull(sphereNode.getBottomRadius());
+				assertFalse(sphereNode.getBottomRadius()==0);
+				assertNotNull(sphereNode.getTopRadius());
+				assertFalse(sphereNode.getTopRadius()==0);
 				return true;
 			}		
 		});
