@@ -38,21 +38,32 @@ import java.net.URL;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
-import java.util.UUID;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.geppetto.core.beans.ModelInterpreterConfig;
 import org.geppetto.core.data.model.IAspectConfiguration;
 import org.geppetto.core.model.AModelInterpreter;
-import org.geppetto.core.model.IModel;
+import org.geppetto.core.model.GeppettoCommonLibraryAccess;
 import org.geppetto.core.model.ModelInterpreterException;
 import org.geppetto.core.model.ModelWrapper;
 import org.geppetto.core.services.ModelFormat;
 import org.geppetto.core.services.registry.ServicesRegistry;
+import org.geppetto.model.GeppettoLibrary;
 import org.geppetto.model.swc.format.SWCException;
 import org.geppetto.model.swc.format.SWCModel;
+import org.geppetto.model.swc.format.SWCPoint;
 import org.geppetto.model.swc.format.SWCReader;
+import org.geppetto.model.types.Type;
+import org.geppetto.model.types.TypesFactory;
+import org.geppetto.model.types.VisualType;
+import org.geppetto.model.values.Cylinder;
+import org.geppetto.model.values.Point;
+import org.geppetto.model.values.Pointer;
+import org.geppetto.model.values.Sphere;
+import org.geppetto.model.values.ValuesFactory;
+import org.geppetto.model.values.VisualComposite;
+import org.geppetto.model.values.VisualValue;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -74,74 +85,6 @@ public class SWCModelInterpreterService extends AModelInterpreter
 	/*
 	 * (non-Javadoc)
 	 * 
-	 * @see org.openworm.simulationengine.core.model.IModelProvider#readModel(java .lang.String)
-	 */
-	public IModel readModel(URL url, List<URL> recordings, String instancePath) throws ModelInterpreterException
-	{
-		dependentModels.clear();
-		model = new ModelWrapper(instancePath);
-
-
-		model = new ModelWrapper(UUID.randomUUID().toString());
-		model.setInstancePath(instancePath);
-		SWCReader swcReader=new SWCReader();
-		
-		SWCModel swcDocument;
-		
-		try
-		{
-			swcDocument = swcReader.readSWCFile(url);
-		}
-		catch(SWCException e)
-		{
-			throw new ModelInterpreterException(e);
-		}
-		
-		model.wrapModel(ServicesRegistry.getModelFormat("SWC"), swcDocument);
-
-		addRecordings(recordings, instancePath, model);
-
-		// add visual tree feature to the model service
-		SWCVisualTreeFeature visualTreeFeature = new SWCVisualTreeFeature();
-		this.addFeature(visualTreeFeature);
-
-		return model;
-	}
-
-	/*
-	 * (non-Javadoc)
-	 * 
-	 * @see org.geppetto.core.model.IModelInterpreter#populateModelTree(org.geppetto .core.model.runtime.AspectNode)
-	 */
-	@Override
-	public boolean populateModelTree(AspectNode aspectNode) throws ModelInterpreterException
-	{
-
-		return false;
-	}
-
-	/*
-	 * (non-Javadoc)
-	 * 
-	 * @see org.geppetto.core.model.IModelInterpreter#populateRuntimeTree(org.geppetto .core.model.runtime.AspectNode)
-	 */
-	@Override
-	public boolean populateRuntimeTree(AspectNode aspectNode) throws ModelInterpreterException
-	{
-		AspectSubTreeNode modelTree = (AspectSubTreeNode) aspectNode.getSubTree(AspectTreeType.MODEL_TREE);
-		AspectSubTreeNode visualizationTree = (AspectSubTreeNode) aspectNode.getSubTree(AspectTreeType.VISUALIZATION_TREE);
-		AspectSubTreeNode simulationTree = (AspectSubTreeNode) aspectNode.getSubTree(AspectTreeType.SIMULATION_TREE);
-
-		modelTree.setId(AspectTreeType.MODEL_TREE.toString());
-		visualizationTree.setId(AspectTreeType.VISUALIZATION_TREE.toString());
-		simulationTree.setId(AspectTreeType.SIMULATION_TREE.toString());
-
-		return true;
-	}
-
-	/*
-	 * (non-Javadoc)
-	 * 
 	 * @see org.geppetto.core.model.IModelInterpreter#getName()
 	 */
 	@Override
@@ -157,16 +100,11 @@ public class SWCModelInterpreterService extends AModelInterpreter
 		ServicesRegistry.registerModelInterpreterService(this, modelFormats);
 	}
 
-	@Override
-	public File downloadModel(AspectNode aspectNode, ModelFormat format, IAspectConfiguration aspectConfiguration) throws ModelInterpreterException
-	{
-		return null;
-	}
 
 	@Override
-	public List<ModelFormat> getSupportedOutputs(AspectNode aspectNode) throws ModelInterpreterException
+	public List<ModelFormat> getSupportedOutputs(Pointer pointer) throws ModelInterpreterException
 	{
-		List<ModelFormat> supportedOutputs = super.getSupportedOutputs(aspectNode);
+		List<ModelFormat> supportedOutputs = super.getSupportedOutputs(pointer);
 		supportedOutputs.add(ServicesRegistry.getModelFormat("SWC"));
 		return supportedOutputs;
 	}
@@ -174,6 +112,95 @@ public class SWCModelInterpreterService extends AModelInterpreter
 	public ModelWrapper getModel()
 	{
 		return this.model;
+	}
+
+	@Override
+	public Type importType(URL url, String typeName, GeppettoLibrary library, GeppettoCommonLibraryAccess commonLibraryAccess) throws ModelInterpreterException
+	{
+		dependentModels.clear();
+		SWCReader swcReader=new SWCReader();
+		
+		SWCModel swcDocument;
+		
+		try
+		{
+			swcDocument = swcReader.readSWCFile(url);
+		}
+		catch(SWCException e)
+		{
+			throw new ModelInterpreterException(e);
+		}
+		
+		VisualType swcModeType = TypesFactory.eINSTANCE.createVisualType();
+		swcModeType.setId(typeName);
+		swcModeType.setName(typeName);
+		VisualComposite swcModel = ValuesFactory.eINSTANCE.createVisualComposite();
+		swcModeType.setDefaultValue(swcModel);
+		
+		for(SWCPoint point : swcDocument.getPointsMap().values())
+		{
+			VisualValue object = getVisualValueFromPoint(point);
+			if(object != null)
+			{
+				//the first point doesn't have a parent.
+				swcModel.getValue().add(object);
+			}
+		}
+		library.getTypes().add(swcModeType);
+		return swcModeType;
+		
+	}
+
+	@Override
+	public File downloadModel(Pointer pointer, ModelFormat format, IAspectConfiguration aspectConfiguration) throws ModelInterpreterException
+	{
+		throw new ModelInterpreterException("Download model not implemented for SWC model interpreter");
+	}
+	
+	
+	/**
+	 * @param swcPoint
+	 * @return
+	 * @throws ModelInterpreterException
+	 */
+	private VisualValue getVisualValueFromPoint(SWCPoint swcPoint) throws ModelInterpreterException
+	{
+
+		if(swcPoint.isSomaPoint())
+		{
+			Sphere sphere = ValuesFactory.eINSTANCE.createSphere();
+			sphere.setRadius(swcPoint.getRadius());
+			sphere.setPosition(getPoint(swcPoint));
+			return sphere;
+		}
+		else
+		{
+			if(swcPoint.getParent() != null)
+			{
+				Cylinder cyl = ValuesFactory.eINSTANCE.createCylinder();
+
+				cyl.setPosition(getPoint(swcPoint));
+				cyl.setBottomRadius(swcPoint.getRadius());
+				cyl.setTopRadius(swcPoint.getParent().getRadius());
+				cyl.setDistal(getPoint(swcPoint.getParent()));
+				cyl.setHeight(0d);
+				return cyl;
+			}
+		}
+		return null;
+	}
+
+	/**
+	 * @param swcPoint
+	 * @return
+	 */
+	private Point getPoint(SWCPoint swcPoint)
+	{
+		Point point = ValuesFactory.eINSTANCE.createPoint();
+		point.setX(swcPoint.getX());
+		point.setY(swcPoint.getY());
+		point.setZ(swcPoint.getZ());
+		return point;
 	}
 
 }
