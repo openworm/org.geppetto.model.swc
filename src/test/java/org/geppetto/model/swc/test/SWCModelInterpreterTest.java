@@ -37,13 +37,18 @@ import static org.junit.Assert.assertNotNull;
 
 import java.net.URL;
 
+import org.geppetto.core.manager.SharedLibraryManager;
+import org.geppetto.core.model.GeppettoCommonLibraryAccess;
 import org.geppetto.core.model.ModelInterpreterException;
 import org.geppetto.core.services.registry.ServicesRegistry;
 import org.geppetto.model.GeppettoFactory;
 import org.geppetto.model.GeppettoLibrary;
+import org.geppetto.model.GeppettoModel;
 import org.geppetto.model.swc.SWCModelInterpreterService;
 import org.geppetto.model.swc.format.SWCException;
 import org.geppetto.model.swc.format.SWCReader;
+import org.geppetto.model.util.GeppettoModelTraversal;
+import org.geppetto.model.util.GeppettoVisitingException;
 import org.geppetto.model.values.Cylinder;
 import org.geppetto.model.values.Sphere;
 import org.geppetto.model.values.util.ValuesSwitch;
@@ -69,19 +74,25 @@ public class SWCModelInterpreterTest
 	/**
 	 * @throws ModelInterpreterException
 	 * @throws SWCException
+	 * @throws GeppettoVisitingException 
 	 */
 	@Test
-	public void testVisualTreeFeature() throws ModelInterpreterException, SWCException
+	public void testVisualTreeFeature() throws ModelInterpreterException, SWCException, GeppettoVisitingException
 	{
-		SWCReader swcReader=new SWCReader();
 		URL swcFile = this.getClass().getResource("/5-HT1B-F-000000.swc");
 
 		SWCModelInterpreterService modelInterpreter=new SWCModelInterpreterService();
 		GeppettoLibrary library=GeppettoFactory.eINSTANCE.createGeppettoLibrary();
+		library.setId("SWC");
+		GeppettoLibrary commonLibrary=SharedLibraryManager.getSharedCommonLibrary();
+		GeppettoModel geppettoModel=GeppettoFactory.eINSTANCE.createGeppettoModel();
+		geppettoModel.getLibraries().add(library);
+		geppettoModel.getLibraries().add(commonLibrary);
 				
-		modelInterpreter.importType(swcFile, "MySWCType", library, null);
-		TestSwitch testSwitch=new TestSwitch();
-		testSwitch.doSwitch(library);
+		GeppettoCommonLibraryAccess commonLibraryAccess=new GeppettoCommonLibraryAccess(geppettoModel);
+				
+		modelInterpreter.importType(swcFile, "MySWCType", library, commonLibraryAccess);
+		GeppettoModelTraversal.apply(geppettoModel, new TestSwitch());
 		
 	}
 

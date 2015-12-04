@@ -135,17 +135,19 @@ public class SWCModelInterpreterService extends AModelInterpreter
 
 			for(SWCPoint point : swcDocument.getPointsMap().values())
 			{
-				Variable v = VariablesFactory.eINSTANCE.createVariable();
+
 				VisualValue object = getVisualValueFromPoint(point);
 				if(object != null)
 				{
+					Variable v = VariablesFactory.eINSTANCE.createVariable();
 					// the first point doesn't have a parent.
 					v.getInitialValues().put(visualType, object);
 					v.getTypes().add(visualType);
 					v.setId("swcPoint" + point.getIndex());
-					v.setId("SWC Segment " + point.getIndex());
+					v.setName("SWC Segment " + point.getIndex());
+					swcModeType.getVariables().add(v);
 				}
-				swcModeType.getVariables().add(v);
+
 			}
 			library.getTypes().add(swcModeType);
 			return swcModeType;
