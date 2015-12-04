@@ -54,16 +54,20 @@ import org.geppetto.model.swc.format.SWCException;
 import org.geppetto.model.swc.format.SWCModel;
 import org.geppetto.model.swc.format.SWCPoint;
 import org.geppetto.model.swc.format.SWCReader;
+import org.geppetto.model.types.CompositeVisualType;
 import org.geppetto.model.types.Type;
 import org.geppetto.model.types.TypesFactory;
+import org.geppetto.model.types.TypesPackage;
 import org.geppetto.model.types.VisualType;
+import org.geppetto.model.util.GeppettoVisitingException;
 import org.geppetto.model.values.Cylinder;
 import org.geppetto.model.values.Point;
 import org.geppetto.model.values.Pointer;
 import org.geppetto.model.values.Sphere;
 import org.geppetto.model.values.ValuesFactory;
-import org.geppetto.model.values.VisualComposite;
 import org.geppetto.model.values.VisualValue;
+import org.geppetto.model.variables.Variable;
+import org.geppetto.model.variables.VariablesFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -100,7 +104,6 @@ public class SWCModelInterpreterService extends AModelInterpreter
 		ServicesRegistry.registerModelInterpreterService(this, modelFormats);
 	}
 
-
 	@Override
 	public List<ModelFormat> getSupportedOutputs(Pointer pointer) throws ModelInterpreterException
 	{
@@ -117,38 +120,43 @@ public class SWCModelInterpreterService extends AModelInterpreter
 	@Override
 	public Type importType(URL url, String typeName, GeppettoLibrary library, GeppettoCommonLibraryAccess commonLibraryAccess) throws ModelInterpreterException
 	{
-		dependentModels.clear();
-		SWCReader swcReader=new SWCReader();
-		
-		SWCModel swcDocument;
-		
 		try
 		{
-			swcDocument = swcReader.readSWCFile(url);
+			dependentModels.clear();
+			SWCReader swcReader = new SWCReader();
+
+			SWCModel swcDocument = swcReader.readSWCFile(url);
+			CompositeVisualType swcModeType = TypesFactory.eINSTANCE.createCompositeVisualType();
+
+			VisualType visualType = (VisualType) commonLibraryAccess.getType(TypesPackage.Literals.VISUAL_TYPE);
+
+			swcModeType.setId(typeName);
+			swcModeType.setName(typeName);
+
+			for(SWCPoint point : swcDocument.getPointsMap().values())
+			{
+				Variable v = VariablesFactory.eINSTANCE.createVariable();
+				VisualValue object = getVisualValueFromPoint(point);
+				if(object != null)
+				{
+					// the first point doesn't have a parent.
+					v.getInitialValues().put(visualType, object);
+					v.getTypes().add(visualType);
+					v.setId("swcPoint" + point.getIndex());
+					v.setId("SWC Segment " + point.getIndex());
+				}
+			}
+			library.getTypes().add(swcModeType);
+			return swcModeType;
+		}
+		catch(GeppettoVisitingException e)
+		{
+			throw new ModelInterpreterException(e);
 		}
 		catch(SWCException e)
 		{
 			throw new ModelInterpreterException(e);
 		}
-		
-		VisualType swcModeType = TypesFactory.eINSTANCE.createVisualType();
-		swcModeType.setId(typeName);
-		swcModeType.setName(typeName);
-		VisualComposite swcModel = ValuesFactory.eINSTANCE.createVisualComposite();
-		swcModeType.setDefaultValue(swcModel);
-		
-		for(SWCPoint point : swcDocument.getPointsMap().values())
-		{
-			VisualValue object = getVisualValueFromPoint(point);
-			if(object != null)
-			{
-				//the first point doesn't have a parent.
-				swcModel.getValue().add(object);
-			}
-		}
-		library.getTypes().add(swcModeType);
-		return swcModeType;
-		
 	}
 
 	@Override
@@ -156,8 +164,7 @@ public class SWCModelInterpreterService extends AModelInterpreter
 	{
 		throw new ModelInterpreterException("Download model not implemented for SWC model interpreter");
 	}
-	
-	
+
 	/**
 	 * @param swcPoint
 	 * @return
