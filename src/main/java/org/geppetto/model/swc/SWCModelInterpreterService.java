@@ -145,6 +145,7 @@ public class SWCModelInterpreterService extends AModelInterpreter
 					v.setId("swcPoint" + point.getIndex());
 					v.setId("SWC Segment " + point.getIndex());
 				}
+				swcModeType.getVariables().add(v);
 			}
 			library.getTypes().add(swcModeType);
 			return swcModeType;
