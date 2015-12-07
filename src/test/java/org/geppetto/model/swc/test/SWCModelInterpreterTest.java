@@ -38,7 +38,7 @@ import static org.junit.Assert.assertNotNull;
 import java.net.URL;
 
 import org.geppetto.core.manager.SharedLibraryManager;
-import org.geppetto.core.model.GeppettoCommonLibraryAccess;
+import org.geppetto.core.model.GeppettoModelAccess;
 import org.geppetto.core.model.ModelInterpreterException;
 import org.geppetto.core.services.registry.ServicesRegistry;
 import org.geppetto.model.GeppettoFactory;
@@ -89,7 +89,7 @@ public class SWCModelInterpreterTest
 		geppettoModel.getLibraries().add(library);
 		geppettoModel.getLibraries().add(commonLibrary);
 				
-		GeppettoCommonLibraryAccess commonLibraryAccess=new GeppettoCommonLibraryAccess(geppettoModel);
+		GeppettoModelAccess commonLibraryAccess=new GeppettoModelAccess(geppettoModel);
 				
 		modelInterpreter.importType(swcFile, "MySWCType", library, commonLibraryAccess);
 		GeppettoModelTraversal.apply(geppettoModel, new TestSwitch());
