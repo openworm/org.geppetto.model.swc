@@ -46,10 +46,9 @@ import org.geppetto.core.data.model.IAspectConfiguration;
 import org.geppetto.core.model.AModelInterpreter;
 import org.geppetto.core.model.GeppettoModelAccess;
 import org.geppetto.core.model.ModelInterpreterException;
-import org.geppetto.core.model.ModelWrapper;
-import org.geppetto.core.services.ModelFormat;
 import org.geppetto.core.services.registry.ServicesRegistry;
 import org.geppetto.model.GeppettoLibrary;
+import org.geppetto.model.ModelFormat;
 import org.geppetto.model.swc.format.SWCException;
 import org.geppetto.model.swc.format.SWCModel;
 import org.geppetto.model.swc.format.SWCPoint;
@@ -84,7 +83,6 @@ public class SWCModelInterpreterService extends AModelInterpreter
 	@Autowired
 	private ModelInterpreterConfig swcModelInterpreterConfig;
 
-	private ModelWrapper model;
 
 	/*
 	 * (non-Javadoc)
@@ -110,11 +108,6 @@ public class SWCModelInterpreterService extends AModelInterpreter
 		List<ModelFormat> supportedOutputs = super.getSupportedOutputs(pointer);
 		supportedOutputs.add(ServicesRegistry.getModelFormat("SWC"));
 		return supportedOutputs;
-	}
-
-	public ModelWrapper getModel()
-	{
-		return this.model;
 	}
 
 	@Override
