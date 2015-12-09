@@ -37,6 +37,7 @@ import static org.junit.Assert.assertNotNull;
 
 import java.net.URL;
 
+import org.geppetto.core.common.GeppettoInitializationException;
 import org.geppetto.core.manager.SharedLibraryManager;
 import org.geppetto.core.model.GeppettoModelAccess;
 import org.geppetto.core.model.ModelInterpreterException;
@@ -46,7 +47,6 @@ import org.geppetto.model.GeppettoLibrary;
 import org.geppetto.model.GeppettoModel;
 import org.geppetto.model.swc.SWCModelInterpreterService;
 import org.geppetto.model.swc.format.SWCException;
-import org.geppetto.model.swc.format.SWCReader;
 import org.geppetto.model.util.GeppettoModelTraversal;
 import org.geppetto.model.util.GeppettoVisitingException;
 import org.geppetto.model.values.Cylinder;
@@ -75,9 +75,10 @@ public class SWCModelInterpreterTest
 	 * @throws ModelInterpreterException
 	 * @throws SWCException
 	 * @throws GeppettoVisitingException 
+	 * @throws GeppettoInitializationException 
 	 */
 	@Test
-	public void testVisualTreeFeature() throws ModelInterpreterException, SWCException, GeppettoVisitingException
+	public void testVisualTreeFeature() throws ModelInterpreterException, SWCException, GeppettoVisitingException, GeppettoInitializationException
 	{
 		URL swcFile = this.getClass().getResource("/5-HT1B-F-000000.swc");
 
