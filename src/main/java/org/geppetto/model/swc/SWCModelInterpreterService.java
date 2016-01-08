@@ -39,8 +39,6 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
 import org.geppetto.core.beans.ModelInterpreterConfig;
 import org.geppetto.core.data.model.IAspectConfiguration;
 import org.geppetto.core.model.AModelInterpreter;
@@ -77,8 +75,6 @@ import org.springframework.stereotype.Service;
 @Service
 public class SWCModelInterpreterService extends AModelInterpreter
 {
-
-	private static Log logger = LogFactory.getLog(SWCModelInterpreterService.class);
 
 	@Autowired
 	private ModelInterpreterConfig swcModelInterpreterConfig;
