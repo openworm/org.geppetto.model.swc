@@ -16,7 +16,7 @@
 		<dependency>
 			<groupId>org.geppetto</groupId>
 			<artifactId>core</artifactId>
-			<version>${version}</version>
+			<version>${project.version}</version>
 		</dependency>
 		<dependency>
 			<groupId>org.springframework</groupId>
@@ -121,7 +121,7 @@
 							{maven-resources},META-INF/spring=src/main/java/META-INF/spring
 						</Include-Resource>
 						<Import-Package>
-							org.geppetto.core.scope,org.aopalliance.aop,org.springframework.aop,,org.springframework.aop.scope,org.springframework.aop.framework,*
+							org.geppetto.core.services,org.geppetto.core.features,org.aopalliance.aop,org.springframework.aop,,org.springframework.aop.scope,org.springframework.aop.framework,*
 						</Import-Package>
 					</instructions>
 				</configuration>
