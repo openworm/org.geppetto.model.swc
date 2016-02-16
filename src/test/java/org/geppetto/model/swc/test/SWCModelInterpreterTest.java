@@ -32,23 +32,26 @@
  *******************************************************************************/
 package org.geppetto.model.swc.test;
 
-import static org.junit.Assert.*;
+import static org.junit.Assert.assertFalse;
+import static org.junit.Assert.assertNotNull;
 
 import java.net.URL;
 
+import org.geppetto.core.common.GeppettoInitializationException;
+import org.geppetto.core.manager.SharedLibraryManager;
+import org.geppetto.core.model.GeppettoModelAccess;
 import org.geppetto.core.model.ModelInterpreterException;
-import org.geppetto.core.model.ModelWrapper;
-import org.geppetto.core.model.runtime.AspectNode;
-import org.geppetto.core.model.runtime.AspectSubTreeNode;
-import org.geppetto.core.model.runtime.AspectSubTreeNode.AspectTreeType;
-import org.geppetto.core.model.runtime.CylinderNode;
-import org.geppetto.core.model.runtime.SphereNode;
-import org.geppetto.core.model.state.visitors.RuntimeTreeVisitor;
 import org.geppetto.core.services.registry.ServicesRegistry;
-import org.geppetto.model.swc.SWCVisualTreeFeature;
+import org.geppetto.model.GeppettoFactory;
+import org.geppetto.model.GeppettoLibrary;
+import org.geppetto.model.GeppettoModel;
+import org.geppetto.model.swc.SWCModelInterpreterService;
 import org.geppetto.model.swc.format.SWCException;
-import org.geppetto.model.swc.format.SWCModel;
-import org.geppetto.model.swc.format.SWCReader;
+import org.geppetto.model.util.GeppettoModelTraversal;
+import org.geppetto.model.util.GeppettoVisitingException;
+import org.geppetto.model.values.Cylinder;
+import org.geppetto.model.values.Sphere;
+import org.geppetto.model.values.util.ValuesSwitch;
 import org.junit.Before;
 import org.junit.Test;
 
@@ -56,7 +59,7 @@ import org.junit.Test;
  * @author matteocantarelli
  *
  */
-public class SWCVisualTreeFeatureTest
+public class SWCModelInterpreterTest
 {
 
 	/**
@@ -71,44 +74,48 @@ public class SWCVisualTreeFeatureTest
 	/**
 	 * @throws ModelInterpreterException
 	 * @throws SWCException
+	 * @throws GeppettoVisitingException 
+	 * @throws GeppettoInitializationException 
 	 */
 	@Test
-	public void testVisualTreeFeature() throws ModelInterpreterException, SWCException
+	public void testVisualTreeFeature() throws ModelInterpreterException, SWCException, GeppettoVisitingException, GeppettoInitializationException
 	{
-		AspectNode aspectNode=new AspectNode(null);
-		ModelWrapper model=new ModelWrapper(null);
-		SWCModel swcDocument;
-		SWCReader swcReader=new SWCReader();
 		URL swcFile = this.getClass().getResource("/5-HT1B-F-000000.swc");
-		swcDocument = swcReader.readSWCFile(swcFile);
-		model.wrapModel(ServicesRegistry.getModelFormat("SWC"), swcDocument);
-		aspectNode.setModel(model);
-		SWCVisualTreeFeature feature=new SWCVisualTreeFeature();
-		feature.populateVisualTree(aspectNode);
-		AspectSubTreeNode visualizationTree = (AspectSubTreeNode) aspectNode.getSubTree(AspectTreeType.VISUALIZATION_TREE);
-		assertEquals(112,visualizationTree.getChildren().size());
-		visualizationTree.apply(new RuntimeTreeVisitor()
-		{
-			
-			@Override
-			public boolean visitSphereNode(SphereNode sphereNode)
-			{
-				assertNotNull(sphereNode.getRadius());
-				assertFalse(sphereNode.getRadius() == 0);
-				return true;
-			}
-			
-			@Override
-			public boolean visitCylinderNode(CylinderNode sphereNode)
-			{
-				assertNotNull(sphereNode.getRadiusBottom());
-				assertFalse(sphereNode.getRadiusBottom()==0);
-				assertNotNull(sphereNode.getRadiusTop());
-				assertFalse(sphereNode.getRadiusTop()==0);
-				return true;
-			}		
-		});
+
+		SWCModelInterpreterService modelInterpreter=new SWCModelInterpreterService();
+		GeppettoLibrary library=GeppettoFactory.eINSTANCE.createGeppettoLibrary();
+		library.setId("SWC");
+		GeppettoLibrary commonLibrary=SharedLibraryManager.getSharedCommonLibrary();
+		GeppettoModel geppettoModel=GeppettoFactory.eINSTANCE.createGeppettoModel();
+		geppettoModel.getLibraries().add(library);
+		geppettoModel.getLibraries().add(commonLibrary);
+				
+		GeppettoModelAccess commonLibraryAccess=new GeppettoModelAccess(geppettoModel);
+				
+		modelInterpreter.importType(swcFile, "MySWCType", library, commonLibraryAccess);
+		GeppettoModelTraversal.apply(geppettoModel, new TestSwitch());
 		
 	}
 
+	private class TestSwitch extends ValuesSwitch<Object>
+	{
+		
+		@Override
+		public Object caseSphere(Sphere sphereNode)
+		{
+			assertNotNull(sphereNode.getRadius());
+			assertFalse(sphereNode.getRadius() == 0);
+			return true;
+		}
+		
+		@Override
+		public Object caseCylinder(Cylinder sphereNode)
+		{
+			assertNotNull(sphereNode.getBottomRadius());
+			assertFalse(sphereNode.getBottomRadius()==0);
+			assertNotNull(sphereNode.getTopRadius());
+			assertFalse(sphereNode.getTopRadius()==0);
+			return true;
+		}		
+	};
 }
