@@ -1,19 +1,13 @@
 language: java
-
 install:
-    - git clone https://github.com/openworm/org.geppetto.model.git -b $TRAVIS_BRANCH
-    - cd org.geppetto.model
-    - mvn install
-    - cd ..
-    - git clone https://github.com/openworm/org.geppetto.core.git -b $TRAVIS_BRANCH
-    - cd org.geppetto.core
-    - mvn install
-    - cd ..    
-
-    
-    
-    
- 
- 
-
-
+- git clone https://github.com/openworm/org.geppetto.model.git -b $TRAVIS_BRANCH
+- cd org.geppetto.model
+- mvn install
+- cd ..
+- git clone https://github.com/openworm/org.geppetto.core.git -b $TRAVIS_BRANCH
+- cd org.geppetto.core
+- mvn install
+- cd ..
+env:
+  global:
+    secure: obGbTLZUlXjIQR61y3H59Unh1ZseCb+W2mEMD/WCM0zG9t/cRbSXjxvfSohIFGXCDjaUUf9FcJuwdxXYFEGc1xmMhEd04QOCq8PqPx59HBqKfCr8ZW+25B6/L39+LjvckE5Z3LL06iiMKerkgKYQAK+MAqCLjeuzSTWAKT7WFEWEraxB0LeDqalZ1WW4YL1nZc1LibNpTXoYj3yv9LDsdDnHU//9TM8wcdA0ubyn4WrbOb/6M3gQft+rY6rX//qKd7uy8Qzl5Cva9fnuX2QIXesftiNzQr+dQp93HPexwR6igFwqCjDev9y4WndsOtib3rqGYn9QiCNgBG2+4Aitqj7xJbK9ilCAry1Z9FJ+/chGOq0guki87eUteDrM2I+saCqGeMDbo1mPI3oNbxrnykYvc11AICumj1oagGU6Ow6Lsw2KubLznIe9lRSOE+p4oKTnO/IczdILQ2XXtxVNM1I0vP7Ss30ksw7qxjjr1/ALso5phnw3FQuxHaQiAhsN5qq3tlk/dsNs8Ueqgl2z+xLSX1GKDdrjaThuS5C7EKyI1E55duC2dP1ldpBPtU8h3non4Sx2OLTPDWpmbD1RfocSD9Sd3T5dIptKQJOYOTSxPhDN8qO0tNCjLTxOumvAX8CRKSlvfVApuhvlkvS9vLXjIjtAVcNVQwQBzBvYRSM=
