@@ -93,7 +93,7 @@ public class SWCReader
 					for(int j = 0; j < 7; j++)
 					{
 						String nextToken = st.nextToken();
-						if(nextToken.equals("NA") || nextToken.equals("-1"))
+						if(nextToken.equals("NA"))
 						{
 							nextToken = "1";
 						}
