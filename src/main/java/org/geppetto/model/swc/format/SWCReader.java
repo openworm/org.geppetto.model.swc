@@ -95,7 +95,7 @@ public class SWCReader
 						String nextToken = st.nextToken();
 						if(nextToken.equals("NA"))
 						{
-							nextToken = "1";
+							nextToken = "-1";
 						}
 						lineValues[j] = Double.valueOf(nextToken).doubleValue();
 					}
