@@ -80,7 +80,7 @@ public class SWCPoint
 	 */
 	public boolean isSomaPoint()
 	{
-		return type == 1;
+		return ((type == 1) && (parent == (SWCPoint) -1));
 	}
 
 	/*
