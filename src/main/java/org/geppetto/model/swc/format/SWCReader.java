@@ -104,7 +104,11 @@ public class SWCReader
 					x = lineValues[2];
 					y = lineValues[3];
 					z = lineValues[4];
-					radius = lineValues[5];
+					if ((int) lineValues[5] > 0){ // enforsing a minimum radius of 1
+						radius = lineValues[5];
+					}else{
+						radius = "1";
+					}
 					parentPointIndex = (int) lineValues[6];
 
 					model.addPoint(pointIndex, new SWCPoint(pointIndex, label, parentPointIndex, x, y, z, radius));
