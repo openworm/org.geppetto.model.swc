@@ -95,7 +95,7 @@ public class SWCReader
 						String nextToken = st.nextToken();
 						if(nextToken.equals("NA"))
 						{
-							nextToken = "1";
+							nextToken = "-1";
 						}
 						lineValues[j] = Double.valueOf(nextToken).doubleValue();
 					}
@@ -104,7 +104,11 @@ public class SWCReader
 					x = lineValues[2];
 					y = lineValues[3];
 					z = lineValues[4];
-					radius = lineValues[5];
+					if (lineValues[5] > 0.0){ // enforsing a minimum radius of 1
+						radius = lineValues[5];
+					}else{
+						radius = 1.0;
+					}
 					parentPointIndex = (int) lineValues[6];
 
 					model.addPoint(pointIndex, new SWCPoint(pointIndex, label, parentPointIndex, x, y, z, radius));
