@@ -107,7 +107,7 @@ public class SWCReader
 					if ((int) lineValues[5] > 0){ // enforsing a minimum radius of 1
 						radius = lineValues[5];
 					}else{
-						radius = 1;
+						radius = 1.0;
 					}
 					parentPointIndex = (int) lineValues[6];
 
